@@ -9,7 +9,7 @@ use super::Hotkeys;
 use crate::hotkey_config::KeyRepeat;
 
 #[derive(Clone)]
-pub struct HotkeyState {
+pub(crate) struct HotkeyState {
     pub just_pressed: bool,
     pub pressed: bool,
     pub just_released: bool,
@@ -18,7 +18,7 @@ pub struct HotkeyState {
 }
 
 impl HotkeyState {
-    pub fn from_settings(key_repeat_settings: &KeyRepeat) -> Self {
+    pub(crate) fn from_settings(key_repeat_settings: &KeyRepeat) -> Self {
         HotkeyState {
             just_pressed: false,
             pressed: false,
@@ -27,7 +27,8 @@ impl HotkeyState {
             repeated: false,
         }
     }
-    pub fn update(
+
+    pub(crate) fn update(
         &mut self,
         hotkey: &Hotkeys,
         keyboard_input: &Input<KeyCode>,
@@ -43,7 +44,7 @@ impl HotkeyState {
         self.repeated = self.repeat_state.key_repeated() || self.just_pressed;
     }
 
-    pub fn reset(&mut self) {
+    pub(crate) fn reset(&mut self) {
         self.just_pressed = false;
         self.pressed = false;
         self.just_released = false;

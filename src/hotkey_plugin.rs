@@ -7,6 +7,7 @@ use super::hotkey_states::set_hotkey_states_from_input_system;
 use super::hotkey_states::HotkeyStates;
 use super::window_focus_state::WindowFocusState;
 use crate::hotkey_config::HotkeyConfig;
+use crate::hotkey_config::KeyRepeat;
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug, SystemLabel)]
 enum HotkeySystems {
@@ -16,26 +17,31 @@ enum HotkeySystems {
 
 pub struct HotkeyPlugin<T: Eq + Hash + Clone> {
     config: HotkeyConfig<T>,
+    key_repeat: KeyRepeat,
 }
 
 impl<T: Eq + Hash + Clone> HotkeyPlugin<T> {
     pub fn new(config: HotkeyConfig<T>) -> Self {
-        Self { config }
+        Self {
+            config,
+            key_repeat: KeyRepeat::default(),
+        }
     }
 }
 
 impl<T: Sync + Send + 'static + Eq + Hash + Clone> Plugin for HotkeyPlugin<T> {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.insert_resource(HotkeyStates::from_settings(self.config.clone()))
-            .init_resource::<WindowFocusState>()
-            .add_system(
-                set_hotkey_states_from_input_system::<T>.label(HotkeySystems::SetHotkeyStates),
-            )
-            .add_system(
-                reset_input_system
-                    .label(HotkeySystems::InputReset)
-                    .after(HotkeySystems::SetHotkeyStates),
-            );
+        app.insert_resource(HotkeyStates::from_settings(
+            self.config.clone(),
+            self.key_repeat.clone(),
+        ))
+        .init_resource::<WindowFocusState>()
+        .add_system(set_hotkey_states_from_input_system::<T>.label(HotkeySystems::SetHotkeyStates))
+        .add_system(
+            reset_input_system
+                .label(HotkeySystems::InputReset)
+                .after(HotkeySystems::SetHotkeyStates),
+        );
     }
 }
 

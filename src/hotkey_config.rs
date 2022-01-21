@@ -12,8 +12,7 @@ use crate::modifier::Modifier;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct HotkeyConfig<T: Hash + Eq + Clone> {
-    pub map: HashMap<T, Hotkeys>,
-    pub key_repeat: KeyRepeat,
+    map: HashMap<T, Hotkeys>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -34,7 +33,6 @@ impl Default for KeyRepeat {
 impl<T: Eq + Hash + Clone> HotkeyConfig<T> {
     pub fn empty() -> Self {
         Self {
-            key_repeat: KeyRepeat::default(),
             map: HashMap::new(),
         }
     }
@@ -64,16 +62,13 @@ impl<T: Eq + Hash + Clone> HotkeyConfig<T> {
         }
     }
 
-    pub fn get(&self, hotkey: &T) -> Hotkeys {
-        self.map
-            .get(hotkey)
-            .cloned()
-            .unwrap_or_else(|| Hotkeys::new(vec![]))
-    }
-
     pub fn update_from(&mut self, config: &HotkeyConfig<T>) {
         for (key, value) in config.map.iter() {
             self.map.entry(key.clone()).or_insert(value.clone());
         }
+    }
+
+    pub(crate) fn iter<'a>(&'a self) -> impl Iterator<Item = (&'a T, &'a Hotkeys)> {
+        self.map.iter()
     }
 }

@@ -14,23 +14,21 @@ use bevy::window::Windows;
 use super::hotkey_config::HotkeyConfig;
 use super::hotkey_state::HotkeyState;
 use super::window_focus_state::WindowFocusState;
-use super::Hotkeys;
+use crate::hotkey_config::KeyRepeat;
 
 pub struct HotkeyStates<T: Eq + Hash + Clone> {
     config: HotkeyConfig<T>,
+    key_repeat: KeyRepeat,
     states: HashMap<T, HotkeyState>,
 }
 
 impl<T: Eq + Hash + Clone> HotkeyStates<T> {
-    pub fn from_settings(config: HotkeyConfig<T>) -> Self {
+    pub fn from_settings(config: HotkeyConfig<T>, key_repeat: KeyRepeat) -> Self {
         Self {
             states: HashMap::new(),
+            key_repeat,
             config,
         }
-    }
-
-    pub fn get_hotkeys(&self, hotkey: T) -> Hotkeys {
-        self.config.get(&hotkey)
     }
 
     pub fn iter_just_pressed(&self) -> impl Iterator<Item = &T> + '_ {
@@ -83,14 +81,12 @@ impl<T: Eq + Hash + Clone> HotkeyStates<T> {
         mouse_wheel_events: &[&MouseWheel],
         time: &Time,
     ) {
-        for (name, hotkey) in self.config.map.iter() {
+        for (name, hotkey) in self.config.iter() {
             let state = self.states.get_mut(name);
             match state {
                 None => {
-                    self.states.insert(
-                        name.clone(),
-                        HotkeyState::from_settings(&self.config.key_repeat),
-                    );
+                    self.states
+                        .insert(name.clone(), HotkeyState::from_settings(&self.key_repeat));
                 }
                 Some(state) => state.update(
                     hotkey,
@@ -105,10 +101,8 @@ impl<T: Eq + Hash + Clone> HotkeyStates<T> {
 
     #[cfg(test)]
     pub fn just_press_hotkey(&mut self, name: T) {
-        self.states.insert(
-            name.clone(),
-            HotkeyState::from_settings(&self.config.key_repeat),
-        );
+        self.states
+            .insert(name.clone(), HotkeyState::from_settings(&self.key_repeat));
         let state = self.states.get_mut(&name).unwrap();
         state.pressed = true;
         state.just_pressed = true;
@@ -116,20 +110,16 @@ impl<T: Eq + Hash + Clone> HotkeyStates<T> {
 
     #[cfg(test)]
     pub fn press_hotkey(&mut self, name: T) {
-        self.states.insert(
-            name.clone(),
-            HotkeyState::from_settings(&self.config.key_repeat),
-        );
+        self.states
+            .insert(name.clone(), HotkeyState::from_settings(&self.key_repeat));
         let state = self.states.get_mut(&name).unwrap();
         state.pressed = true;
     }
 
     #[cfg(test)]
     pub fn release_hotkey(&mut self, name: T) {
-        self.states.insert(
-            name.clone(),
-            HotkeyState::from_settings(&self.config.key_repeat),
-        );
+        self.states
+            .insert(name.clone(), HotkeyState::from_settings(&self.key_repeat));
         let state = self.states.get_mut(&name).unwrap();
         state.just_released = true;
     }

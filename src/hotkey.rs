@@ -15,13 +15,13 @@ use crate::modifier::Modifier;
 use crate::modifier::AVAILABLE_MODIFIERS;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-pub struct Hotkey {
+pub(crate) struct Hotkey {
     pub key: Action,
     pub modifiers: Vec<Modifier>,
 }
 
 impl Hotkey {
-    pub fn pressed(
+    pub(crate) fn pressed(
         &self,
         keyboard_input: &Input<KeyCode>,
         mouse_input: &Input<MouseButton>,
@@ -34,7 +34,7 @@ impl Hotkey {
             }
     }
 
-    pub fn just_pressed(
+    pub(crate) fn just_pressed(
         &self,
         keyboard_input: &Input<KeyCode>,
         mouse_input: &Input<MouseButton>,
