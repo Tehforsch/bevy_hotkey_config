@@ -1,6 +1,9 @@
 use std::hash::Hash;
 
-use bevy::prelude::*;
+use bevy::prelude::ParallelSystemDescriptorCoercion;
+use bevy::prelude::Plugin;
+use bevy::prelude::ResMut;
+use bevy::prelude::SystemLabel;
 
 use super::hotkey_states::reset_input_system;
 use super::hotkey_states::set_hotkey_states_from_input_system;

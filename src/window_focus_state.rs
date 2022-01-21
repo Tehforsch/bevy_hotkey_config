@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::input::Input;
+use bevy::prelude::KeyCode;
+use bevy::prelude::MouseButton;
+use bevy::window::Window;
 
 #[derive(Clone, Copy)]
 pub(super) enum WindowFocusState {

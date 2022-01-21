@@ -1,13 +1,13 @@
 use bevy::prelude::App;
-use bevy::prelude::KeyCode;
 use bevy::prelude::Res;
 use bevy::DefaultPlugins;
-use hotkey_plugin::hotkey_config::HotkeyConfig;
 use hotkey_plugin::hotkey_plugin::HotkeyPlugin;
 use hotkey_plugin::hotkey_states::HotkeyStates;
-use hotkey_plugin::modifier::Modifier;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json;
 
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 enum Action {
     WalkLeft,
     WalkRight,
@@ -17,14 +17,8 @@ enum Action {
 
 fn main() {
     let mut app = App::new();
-    let mut config = HotkeyConfig::<Action>::empty();
-    config.insert_normal(Action::WalkLeft, KeyCode::A);
-    config.insert_normal(Action::WalkRight, KeyCode::D);
-    config.insert_normal(Action::WalkLeft, KeyCode::Left);
-    config.insert_normal(Action::WalkRight, KeyCode::Right);
-    config.insert_normal(Action::Jump, KeyCode::W);
-    config.insert_with_modifiers(Action::Jump, KeyCode::W, &[Modifier::Control]);
-    config.insert_normal(Action::Duck, KeyCode::S);
+
+    let config = serde_json::from_str(include_str!("assets/settings.json")).unwrap();
 
     app.add_plugins(DefaultPlugins)
         .add_plugin(HotkeyPlugin::<Action>::new(config))

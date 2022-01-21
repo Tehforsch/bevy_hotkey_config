@@ -8,3 +8,9 @@ edition = "2021"
 [dependencies]
 bevy = {version = "0.6.0",  features = ["serialize"]}
 serde = "1.0.133"
+
+[[example]]
+name = "basic"
+
+[dev-dependencies]
+serde_json = "1.0.75"
