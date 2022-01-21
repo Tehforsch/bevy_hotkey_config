@@ -6,7 +6,7 @@ use bevy::prelude::MouseButton;
 
 use super::key_repeat_state::KeyRepeatState;
 use super::Hotkeys;
-use crate::hotkey_config::KeyRepeat;
+use crate::hotkey_config::KeyRepeatSettings;
 
 #[derive(Clone)]
 pub(crate) struct HotkeyState {
@@ -18,7 +18,7 @@ pub(crate) struct HotkeyState {
 }
 
 impl HotkeyState {
-    pub(crate) fn from_settings(key_repeat_settings: &KeyRepeat) -> Self {
+    pub(crate) fn from_settings(key_repeat_settings: &KeyRepeatSettings) -> Self {
         HotkeyState {
             just_pressed: false,
             pressed: false,

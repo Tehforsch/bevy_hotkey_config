@@ -14,16 +14,16 @@ use bevy::window::Windows;
 use super::hotkey_config::HotkeyConfig;
 use super::hotkey_state::HotkeyState;
 use super::window_focus_state::WindowFocusState;
-use crate::hotkey_config::KeyRepeat;
+use crate::hotkey_config::KeyRepeatSettings;
 
 pub struct HotkeyStates<T: Eq + Hash + Clone> {
     config: HotkeyConfig<T>,
-    key_repeat: KeyRepeat,
+    key_repeat: KeyRepeatSettings,
     states: HashMap<T, HotkeyState>,
 }
 
 impl<T: Eq + Hash + Clone> HotkeyStates<T> {
-    pub fn from_settings(config: HotkeyConfig<T>, key_repeat: KeyRepeat) -> Self {
+    pub fn from_settings(config: HotkeyConfig<T>, key_repeat: KeyRepeatSettings) -> Self {
         Self {
             states: HashMap::new(),
             key_repeat,

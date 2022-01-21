@@ -7,7 +7,7 @@ use super::hotkey_states::set_hotkey_states_from_input_system;
 use super::hotkey_states::HotkeyStates;
 use super::window_focus_state::WindowFocusState;
 use crate::hotkey_config::HotkeyConfig;
-use crate::hotkey_config::KeyRepeat;
+use crate::hotkey_config::KeyRepeatSettings;
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug, SystemLabel)]
 enum HotkeySystems {
@@ -17,14 +17,14 @@ enum HotkeySystems {
 
 pub struct HotkeyPlugin<T: Eq + Hash + Clone> {
     config: HotkeyConfig<T>,
-    key_repeat: KeyRepeat,
+    key_repeat: KeyRepeatSettings,
 }
 
 impl<T: Eq + Hash + Clone> HotkeyPlugin<T> {
     pub fn new(config: HotkeyConfig<T>) -> Self {
         Self {
             config,
-            key_repeat: KeyRepeat::default(),
+            key_repeat: KeyRepeatSettings::default(),
         }
     }
 }

@@ -7,6 +7,7 @@ use serde::Serialize;
 
 use super::Hotkeys;
 use crate::action::Action;
+use crate::config;
 use crate::hotkey::Hotkey;
 use crate::modifier::Modifier;
 
@@ -16,16 +17,16 @@ pub struct HotkeyConfig<T: Hash + Eq + Clone> {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct KeyRepeat {
+pub struct KeyRepeatSettings {
     pub initial_delay: f32,
     pub delay: f32,
 }
 
-impl Default for KeyRepeat {
+impl Default for KeyRepeatSettings {
     fn default() -> Self {
-        KeyRepeat {
-            initial_delay: 0.3,
-            delay: 0.15,
+        KeyRepeatSettings {
+            initial_delay: config::DEFAULT_REPEAT_INITIAL_DELAY,
+            delay: config::DEFAULT_REPEAT_DELAY,
         }
     }
 }

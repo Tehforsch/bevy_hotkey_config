@@ -1,7 +1,7 @@
 use bevy::core::Time;
 use bevy::core::Timer;
 
-use crate::hotkey_config::KeyRepeat;
+use crate::hotkey_config::KeyRepeatSettings;
 
 #[derive(Clone, Debug)]
 pub struct KeyRepeatState {
@@ -13,7 +13,7 @@ pub struct KeyRepeatState {
 }
 
 impl KeyRepeatState {
-    pub fn from_settings(key_repeat: &KeyRepeat) -> Self {
+    pub fn from_settings(key_repeat: &KeyRepeatSettings) -> Self {
         Self {
             timer: Timer::from_seconds(key_repeat.initial_delay, false),
             in_fast_repeat: false,
