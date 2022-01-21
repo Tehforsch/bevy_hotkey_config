@@ -1,10 +1,14 @@
 use std::collections::HashMap;
 use std::hash::Hash;
 
+use bevy::prelude::KeyCode;
 use serde::Deserialize;
 use serde::Serialize;
 
 use super::Hotkeys;
+use crate::action::Action;
+use crate::hotkey::Hotkey;
+use crate::modifier::Modifier;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct HotkeyConfig<T: Hash + Eq + Clone> {
@@ -28,6 +32,38 @@ impl Default for KeyRepeat {
 }
 
 impl<T: Eq + Hash + Clone> HotkeyConfig<T> {
+    pub fn empty() -> Self {
+        Self {
+            key_repeat: KeyRepeat::default(),
+            map: HashMap::new(),
+        }
+    }
+
+    pub fn insert_normal(&mut self, name: T, key_code: KeyCode) {
+        let hotkey = Hotkey {
+            key: Action::Key(key_code),
+            modifiers: vec![],
+        };
+        self.insert(name, hotkey)
+    }
+
+    pub fn insert_with_modifiers(&mut self, name: T, key_code: KeyCode, modifiers: &[Modifier]) {
+        let hotkey = Hotkey {
+            key: Action::Key(key_code),
+            modifiers: modifiers.into_iter().cloned().collect(),
+        };
+        self.insert(name, hotkey)
+    }
+
+    fn insert(&mut self, name: T, hotkey: Hotkey) {
+        match self.map.get_mut(&name) {
+            Some(hotkeys) => hotkeys.push(hotkey),
+            None => {
+                self.map.insert(name, Hotkeys::new(vec![hotkey]));
+            }
+        }
+    }
+
     pub fn get(&self, hotkey: &T) -> Hotkeys {
         self.map
             .get(hotkey)

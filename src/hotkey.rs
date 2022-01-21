@@ -10,41 +10,9 @@ use serde::Serialize;
 
 use super::action::Action;
 use super::mouse_wheel_action::MouseWheelAction;
-
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
-pub enum Modifier {
-    Control,
-    Shift,
-    Alt,
-}
-
-impl Modifier {
-    pub fn is(&self, key_code: &KeyCode) -> bool {
-        self.get_key_codes().contains(key_code)
-    }
-
-    pub fn get_key_codes(&self) -> Vec<KeyCode> {
-        match self {
-            Modifier::Control => vec![KeyCode::LControl, KeyCode::RControl],
-            Modifier::Shift => vec![KeyCode::LShift, KeyCode::RShift],
-            Modifier::Alt => vec![KeyCode::LAlt, KeyCode::RAlt],
-        }
-    }
-
-    pub fn from(key_code: &KeyCode) -> Option<Self> {
-        match key_code {
-            KeyCode::LControl => Some(Self::Control),
-            KeyCode::RControl => Some(Self::Control),
-            KeyCode::LShift => Some(Self::Shift),
-            KeyCode::RShift => Some(Self::Shift),
-            KeyCode::LAlt => Some(Self::Alt),
-            KeyCode::RAlt => Some(Self::Alt),
-            _ => None,
-        }
-    }
-}
-
-pub const AVAILABLE_MODIFIERS: &[Modifier] = &[Modifier::Control, Modifier::Shift, Modifier::Alt];
+use crate::config;
+use crate::modifier::Modifier;
+use crate::modifier::AVAILABLE_MODIFIERS;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Hotkey {
@@ -103,14 +71,10 @@ impl Display for Hotkey {
         let content = AVAILABLE_MODIFIERS
             .iter()
             .filter(|modifier| self.modifiers.contains(modifier))
-            .map(|modifier| match modifier {
-                Modifier::Control => "ctrl",
-                Modifier::Shift => "shift",
-                Modifier::Alt => "alt",
-            })
+            .map(|modifier| modifier.to_str())
             .chain(iter::once(key_name.as_str()))
             .collect::<Vec<&str>>()
-            .join("+");
+            .join(config::HOTKEY_SEPARATOR);
         write!(f, "{}", content)
     }
 }

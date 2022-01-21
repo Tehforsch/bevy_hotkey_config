@@ -1,10 +1,12 @@
 pub mod action;
+mod config;
 pub mod hotkey;
 pub mod hotkey_config;
 pub mod hotkey_plugin;
 mod hotkey_state;
 pub mod hotkey_states;
 mod key_repeat_state;
+pub mod modifier;
 mod mouse_wheel_action;
 mod window_focus_state;
 
@@ -22,6 +24,10 @@ pub struct Hotkeys(pub Vec<Hotkey>);
 impl Hotkeys {
     pub fn new(hotkeys: Vec<Hotkey>) -> Self {
         Self(hotkeys)
+    }
+
+    pub fn push(&mut self, hotkey: Hotkey) {
+        self.0.push(hotkey)
     }
 
     pub fn just_pressed(
