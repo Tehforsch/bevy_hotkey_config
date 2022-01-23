@@ -2,6 +2,7 @@ mod action;
 mod config;
 mod hotkey;
 pub mod hotkey_config;
+pub mod hotkey_listener;
 pub mod hotkey_plugin;
 mod hotkey_state;
 pub mod hotkey_states;
@@ -49,6 +50,20 @@ impl Hotkeys {
         self.0
             .iter()
             .any(|hotkey| hotkey.pressed(keyboard_input, mouse_input))
+    }
+
+    pub(crate) fn try_remove_hotkey(&mut self, num: usize) {
+        if self.0.len() > num {
+            self.0.remove(num);
+        }
+    }
+
+    pub(crate) fn change_hotkey(&mut self, num: usize, hotkey: Hotkey) {
+        if self.0.len() <= num {
+            self.0.push(hotkey);
+        } else {
+            self.0[num] = hotkey;
+        }
     }
 
     pub fn iter(&self) -> std::slice::Iter<Hotkey> {

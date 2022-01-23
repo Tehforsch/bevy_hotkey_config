@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use hotkey_plugin::hotkey_listener::HotkeyListener;
 use hotkey_plugin::hotkey_plugin::HotkeyPlugin;
 use hotkey_plugin::hotkey_states::HotkeyStates;
 use serde::Deserialize;
@@ -24,31 +25,36 @@ impl Action {
     }
 }
 
-struct SelectedHotkey(Option<Action>);
-
 #[derive(Component)]
-struct HotkeySelector(Action);
+struct HotkeyButton(Action);
 
 fn main() {
     let config = serde_json::from_str(include_str!("../assets/settings.json")).unwrap();
     App::new()
         .add_plugin(HotkeyPlugin::<Action>::new(config))
         .add_plugins(DefaultPlugins)
-        .insert_resource(SelectedHotkey(None))
+        .insert_resource(HotkeyListener::<Action>::new(
+            KeyCode::Back,
+            KeyCode::Escape,
+        ))
         .add_startup_system(setup_ui)
-        .add_system(change_hotkey_system)
+        .add_system(select_hotkey_system)
+        .add_system(input_system)
+        .add_system(HotkeyListener::<Action>::listen_system)
         .run();
 }
 
-fn change_hotkey_system(
+fn select_hotkey_system(
     mut interaction_query: Query<
-        &Interaction,
+        (&Interaction, &HotkeyButton),
         (Changed<Interaction>, With<Button>, With<Children>),
     >,
-    currently_selected_hotkey: Res<SelectedHotkey>,
+    mut currently_selected_hotkey: ResMut<HotkeyListener<Action>>,
 ) {
-    for interaction in interaction_query.iter_mut() {
-        if let Interaction::Clicked = interaction {}
+    for (interaction, hotkey_name) in interaction_query.iter_mut() {
+        if let Interaction::Clicked = interaction {
+            currently_selected_hotkey.set_currently_listening(&hotkey_name.0, 0)
+        }
     }
 }
 
@@ -119,7 +125,7 @@ fn setup_ui(
                         color: Color::rgb(0.25, 0.25, 0.25).into(),
                         ..Default::default()
                     })
-                    .insert(HotkeySelector(action.clone()))
+                    .insert(HotkeyButton(action.clone()))
                     .with_children(|parent| {
                         parent.spawn_bundle(TextBundle {
                             text: Text::with_section(

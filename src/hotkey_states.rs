@@ -104,6 +104,10 @@ impl<T: Eq + Hash + Clone> HotkeyStates<T> {
         self.config.map.get(name)
     }
 
+    pub(crate) fn change_config_for(&mut self, name: T, hotkeys: Hotkeys) {
+        self.config.map.insert(name, hotkeys);
+    }
+
     #[cfg(test)]
     pub fn just_press_hotkey(&mut self, name: T) {
         self.states
