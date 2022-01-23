@@ -19,7 +19,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-struct Hotkeys(Vec<Hotkey>);
+pub struct Hotkeys(Vec<Hotkey>);
 
 impl Hotkeys {
     pub(crate) fn new(hotkeys: Vec<Hotkey>) -> Self {
@@ -49,5 +49,9 @@ impl Hotkeys {
         self.0
             .iter()
             .any(|hotkey| hotkey.pressed(keyboard_input, mouse_input))
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<Hotkey> {
+        self.0.iter()
     }
 }

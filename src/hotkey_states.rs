@@ -15,6 +15,7 @@ use super::hotkey_config::HotkeyConfig;
 use super::hotkey_state::HotkeyState;
 use super::window_focus_state::WindowFocusState;
 use crate::hotkey_config::KeyRepeatSettings;
+use crate::Hotkeys;
 
 pub struct HotkeyStates<T: Eq + Hash + Clone> {
     config: HotkeyConfig<T>,
@@ -97,6 +98,10 @@ impl<T: Eq + Hash + Clone> HotkeyStates<T> {
                 ),
             }
         }
+    }
+
+    pub fn get(&self, name: &T) -> Option<&Hotkeys> {
+        self.config.map.get(name)
     }
 
     #[cfg(test)]

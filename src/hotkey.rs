@@ -15,9 +15,9 @@ use crate::modifier::Modifier;
 use crate::modifier::AVAILABLE_MODIFIERS;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
-pub(crate) struct Hotkey {
-    pub key: Action,
-    pub modifiers: Vec<Modifier>,
+pub struct Hotkey {
+    pub(crate) key: Action,
+    pub(crate) modifiers: Vec<Modifier>,
 }
 
 impl Hotkey {

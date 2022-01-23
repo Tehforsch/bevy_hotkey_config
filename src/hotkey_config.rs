@@ -13,7 +13,7 @@ use crate::modifier::Modifier;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct HotkeyConfig<T: Hash + Eq + Clone> {
-    map: HashMap<T, Hotkeys>,
+    pub(crate) map: HashMap<T, Hotkeys>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -54,15 +54,6 @@ impl<T: Eq + Hash + Clone> HotkeyConfig<T> {
         self.insert(name, hotkey)
     }
 
-    fn insert(&mut self, name: T, hotkey: Hotkey) {
-        match self.map.get_mut(&name) {
-            Some(hotkeys) => hotkeys.push(hotkey),
-            None => {
-                self.map.insert(name, Hotkeys::new(vec![hotkey]));
-            }
-        }
-    }
-
     pub fn update_from(&mut self, config: &HotkeyConfig<T>) {
         for (key, value) in config.map.iter() {
             self.map.entry(key.clone()).or_insert(value.clone());
@@ -71,5 +62,14 @@ impl<T: Eq + Hash + Clone> HotkeyConfig<T> {
 
     pub(crate) fn iter<'a>(&'a self) -> impl Iterator<Item = (&'a T, &'a Hotkeys)> {
         self.map.iter()
+    }
+
+    fn insert(&mut self, name: T, hotkey: Hotkey) {
+        match self.map.get_mut(&name) {
+            Some(hotkeys) => hotkeys.push(hotkey),
+            None => {
+                self.map.insert(name, Hotkeys::new(vec![hotkey]));
+            }
+        }
     }
 }

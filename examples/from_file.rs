@@ -18,7 +18,7 @@ enum Action {
 fn main() {
     let mut app = App::new();
 
-    let config = serde_json::from_str(include_str!("assets/settings.json")).unwrap();
+    let config = serde_json::from_str(include_str!("../assets/settings.json")).unwrap();
 
     app.add_plugins(DefaultPlugins)
         .add_plugin(HotkeyPlugin::<Action>::new(config))

@@ -1,1 +1,0 @@
-{"map":{"WalkLeft":[{"key":{"Key":"A"},"modifiers":[]},{"key":{"Key":"Left"},"modifiers":[]}],"WalkRight":[{"key":{"Key":"D"},"modifiers":[]},{"key":{"Key":"Right"},"modifiers":[]}],"Jump":[{"key":{"Key":"W"},"modifiers":[]},{"key":{"Key":"W"},"modifiers":["Control"]}],"Duck":[{"key":{"Key":"S"},"modifiers":[]}]}}
