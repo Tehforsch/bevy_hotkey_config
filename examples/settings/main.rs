@@ -55,7 +55,7 @@ fn select_hotkeys_system(
 ) {
     for (interaction, hotkey_name) in interaction_query.iter_mut() {
         if let Interaction::Clicked = interaction {
-            hotkey_listener.set_currently_listening(&hotkey_name.0, 0)
+            hotkey_listener.set_currently_listening(&hotkey_name.action, hotkey_name.num)
         }
     }
 }
