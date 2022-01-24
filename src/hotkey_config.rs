@@ -60,6 +60,10 @@ impl<T: Eq + Hash + Clone> HotkeyConfig<T> {
         }
     }
 
+    pub fn get(&self, name: &T) -> Option<&Hotkeys> {
+        self.map.get(name)
+    }
+
     pub(crate) fn iter<'a>(&'a self) -> impl Iterator<Item = (&'a T, &'a Hotkeys)> {
         self.map.iter()
     }
@@ -70,6 +74,14 @@ impl<T: Eq + Hash + Clone> HotkeyConfig<T> {
             None => {
                 self.map.insert(name, Hotkeys::new(vec![hotkey]));
             }
+        }
+    }
+}
+
+impl<T: Eq + Hash + Clone> FromIterator<(T, Hotkeys)> for HotkeyConfig<T> {
+    fn from_iter<I: IntoIterator<Item = (T, Hotkeys)>>(iter: I) -> Self {
+        Self {
+            map: iter.into_iter().collect(),
         }
     }
 }

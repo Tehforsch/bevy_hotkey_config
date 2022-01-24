@@ -56,6 +56,8 @@ impl<T: Sync + Send + 'static + Eq + Hash + Clone> Plugin for HotkeyPlugin<T> {
         );
         if let Some((cancel_key, remove_key)) = self.listener_settings {
             app.insert_resource(HotkeyListener::<T>::new(cancel_key, remove_key))
+                .insert_resource(self.config.clone())
+                .add_system(HotkeyListener::<T>::apply_hotkey_system)
                 .add_system(HotkeyListener::<T>::listen_system);
         }
     }

@@ -18,7 +18,7 @@ use crate::hotkey_config::KeyRepeatSettings;
 use crate::Hotkeys;
 
 pub struct HotkeyStates<T: Eq + Hash + Clone> {
-    config: HotkeyConfig<T>,
+    pub(crate) config: HotkeyConfig<T>,
     key_repeat: KeyRepeatSettings,
     states: HashMap<T, HotkeyState>,
 }
@@ -102,10 +102,6 @@ impl<T: Eq + Hash + Clone> HotkeyStates<T> {
 
     pub fn get(&self, name: &T) -> Option<&Hotkeys> {
         self.config.map.get(name)
-    }
-
-    pub(crate) fn change_config_for(&mut self, name: T, hotkeys: Hotkeys) {
-        self.config.map.insert(name, hotkeys);
     }
 
     #[cfg(test)]

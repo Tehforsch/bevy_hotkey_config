@@ -8,6 +8,7 @@ use bevy::prelude::ResMut;
 
 use crate::action::Action;
 use crate::hotkey::Hotkey;
+use crate::hotkey_config::HotkeyConfig;
 use crate::hotkey_states::HotkeyStates;
 use crate::modifier::Modifier;
 use crate::modifier::AVAILABLE_MODIFIERS;
@@ -18,6 +19,7 @@ pub struct HotkeyListener<T> {
     currently_listening: Option<(T, usize)>,
     cancel_hotkey: KeyCode,
     remove_hotkey: KeyCode,
+    should_apply_settings: bool,
 }
 
 impl<T> HotkeyListener<T> {
@@ -26,6 +28,7 @@ impl<T> HotkeyListener<T> {
             currently_listening: None,
             cancel_hotkey,
             remove_hotkey,
+            should_apply_settings: false,
         }
     }
 }
@@ -42,9 +45,13 @@ where
         self.currently_listening = None
     }
 
-    pub fn listen_system(
+    pub fn apply_settings(&mut self) {
+        self.should_apply_settings = true
+    }
+
+    pub(crate) fn listen_system(
         mut listener: ResMut<Self>,
-        mut hotkey_states: ResMut<HotkeyStates<T>>,
+        mut settings_hotkeys: ResMut<HotkeyConfig<T>>,
         input: Res<Input<KeyCode>>,
     ) {
         if listener.currently_listening.is_none() {
@@ -60,24 +67,30 @@ where
         if other_keys_pressed.len() == 1 {
             let pressed_key = other_keys_pressed.first().unwrap();
             listener.assign(
-                &mut hotkey_states,
+                &mut settings_hotkeys,
                 modifiers_pressed,
                 Action::Key(pressed_key.clone()),
             );
         }
     }
 
-    fn assign(
-        &mut self,
-        hotkey_states: &mut HotkeyStates<T>,
-        modifiers: Vec<Modifier>,
-        action: Action,
+    pub(crate) fn apply_hotkey_system(
+        listener: ResMut<Self>,
+        config: Res<HotkeyConfig<T>>,
+        mut live_hotkeys: ResMut<HotkeyStates<T>>,
     ) {
+        if listener.should_apply_settings {
+            live_hotkeys.config = config.clone();
+        }
+    }
+
+    fn assign(&mut self, config: &mut HotkeyConfig<T>, modifiers: Vec<Modifier>, action: Action) {
         // We know that we are listening for some hotkey, so we can unwrap.
         // This also resets the listening state, so after this function call
         // we will not listen anymore.
         let (hotkey, num) = self.currently_listening.take().unwrap();
-        let mut current_hotkeys = hotkey_states
+        let mut current_hotkeys = config
+            .map
             .get(&hotkey)
             .cloned()
             .unwrap_or(Hotkeys::new(vec![]));
@@ -95,6 +108,6 @@ where
             modifiers,
         };
         current_hotkeys.change_hotkey(num, new_hotkey);
-        hotkey_states.change_config_for(hotkey.clone(), current_hotkeys);
+        config.map.insert(hotkey.clone(), current_hotkeys);
     }
 }
