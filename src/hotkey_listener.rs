@@ -12,7 +12,6 @@ use crate::hotkey_config::HotkeyConfig;
 use crate::hotkey_states::HotkeyStates;
 use crate::modifier::Modifier;
 use crate::modifier::AVAILABLE_MODIFIERS;
-use crate::Hotkeys;
 
 #[derive(Component)]
 pub struct HotkeyListener<T> {
@@ -89,14 +88,12 @@ where
         // This also resets the listening state, so after this function call
         // we will not listen anymore.
         let (hotkey, num) = self.currently_listening.take().unwrap();
-        let mut current_hotkeys = config
-            .map
-            .get(&hotkey)
-            .cloned()
-            .unwrap_or(Hotkeys::new(vec![]));
+        let current_hotkeys = config.map.get_mut(&hotkey);
         if let Action::Key(key) = action {
             if key == self.remove_hotkey {
-                current_hotkeys.try_remove_hotkey(num);
+                if let Some(current_hotkeys) = current_hotkeys {
+                    current_hotkeys.try_remove_hotkey(num);
+                }
                 return;
             }
             if key == self.cancel_hotkey {
@@ -107,7 +104,8 @@ where
             key: action,
             modifiers,
         };
-        current_hotkeys.change_hotkey(num, new_hotkey);
-        config.map.insert(hotkey.clone(), current_hotkeys);
+        if let Some(current_hotkeys) = current_hotkeys {
+            current_hotkeys.change_hotkey(num, new_hotkey);
+        }
     }
 }
