@@ -31,16 +31,13 @@ struct HotkeyButton(Action);
 fn main() {
     let config = serde_json::from_str(include_str!("../assets/settings.json")).unwrap();
     App::new()
-        .add_plugin(HotkeyPlugin::<Action>::new(config))
+        .add_plugin(
+            HotkeyPlugin::<Action>::new(config).allow_modification(KeyCode::Escape, KeyCode::Back),
+        )
         .add_plugins(DefaultPlugins)
-        .insert_resource(HotkeyListener::<Action>::new(
-            KeyCode::Back,
-            KeyCode::Escape,
-        ))
         .add_startup_system(setup_ui)
         .add_system(select_hotkey_system)
         .add_system(input_system)
-        .add_system(HotkeyListener::<Action>::listen_system)
         .run();
 }
 

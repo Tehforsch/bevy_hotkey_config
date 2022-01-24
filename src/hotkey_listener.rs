@@ -16,16 +16,16 @@ use crate::Hotkeys;
 #[derive(Component)]
 pub struct HotkeyListener<T> {
     currently_listening: Option<(T, usize)>,
-    remove_hotkey: KeyCode,
     cancel_hotkey: KeyCode,
+    remove_hotkey: KeyCode,
 }
 
 impl<T> HotkeyListener<T> {
     pub fn new(cancel_hotkey: KeyCode, remove_hotkey: KeyCode) -> Self {
         Self {
             currently_listening: None,
-            remove_hotkey,
             cancel_hotkey,
+            remove_hotkey,
         }
     }
 }

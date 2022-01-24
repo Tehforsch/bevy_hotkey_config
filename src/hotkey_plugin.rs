@@ -1,5 +1,6 @@
 use std::hash::Hash;
 
+use bevy::prelude::KeyCode;
 use bevy::prelude::ParallelSystemDescriptorCoercion;
 use bevy::prelude::Plugin;
 use bevy::prelude::ResMut;
@@ -11,6 +12,7 @@ use super::hotkey_states::HotkeyStates;
 use super::window_focus_state::WindowFocusState;
 use crate::hotkey_config::HotkeyConfig;
 use crate::hotkey_config::KeyRepeatSettings;
+use crate::hotkey_listener::HotkeyListener;
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug, SystemLabel)]
 enum HotkeySystems {
@@ -21,6 +23,7 @@ enum HotkeySystems {
 pub struct HotkeyPlugin<T: Eq + Hash + Clone> {
     config: HotkeyConfig<T>,
     key_repeat: KeyRepeatSettings,
+    listener_settings: Option<(KeyCode, KeyCode)>,
 }
 
 impl<T: Eq + Hash + Clone> HotkeyPlugin<T> {
@@ -28,7 +31,13 @@ impl<T: Eq + Hash + Clone> HotkeyPlugin<T> {
         Self {
             config,
             key_repeat: KeyRepeatSettings::default(),
+            listener_settings: None,
         }
+    }
+
+    pub fn allow_modification(mut self, cancel_key: KeyCode, remove_key: KeyCode) -> Self {
+        self.listener_settings = Some((cancel_key, remove_key));
+        self
     }
 }
 
@@ -45,6 +54,10 @@ impl<T: Sync + Send + 'static + Eq + Hash + Clone> Plugin for HotkeyPlugin<T> {
                 .label(HotkeySystems::InputReset)
                 .after(HotkeySystems::SetHotkeyStates),
         );
+        if let Some((cancel_key, remove_key)) = self.listener_settings {
+            app.insert_resource(HotkeyListener::<T>::new(cancel_key, remove_key))
+                .add_system(HotkeyListener::<T>::listen_system);
+        }
     }
 }
 
