@@ -34,10 +34,10 @@ pub fn change_button_text_system(
     }
 }
 
-pub fn spawn_button<'w, 's, 'a, 'b>(
+fn spawn_button<'w, 's, 'a, 'b>(
     parent: &'a mut ChildBuilder<'w, 's, 'b>,
-    text: String,
-    font: Handle<Font>,
+    text: &str,
+    font: &Handle<Font>,
 ) -> EntityCommands<'w, 's, 'a> {
     let mut entity = parent.spawn_bundle(ButtonBundle {
         style: Style {
@@ -50,20 +50,34 @@ pub fn spawn_button<'w, 's, 'a, 'b>(
         ..Default::default()
     });
     entity.with_children(|parent| {
-        parent.spawn_bundle(TextBundle {
-            text: Text::with_section(
-                text,
-                TextStyle {
-                    font,
-                    font_size: 30.0,
-                    color: Color::rgb(0.9, 0.9, 0.9),
-                },
-                Default::default(),
-            ),
-            ..Default::default()
-        });
+        spawn_text(parent, text, font, None);
     });
     entity
+}
+
+fn spawn_text<'w, 's, 'a, 'b>(
+    parent: &'a mut ChildBuilder<'w, 's, 'b>,
+    text: &str,
+    font: &Handle<Font>,
+    size: Option<Size<Val>>,
+) -> EntityCommands<'w, 's, 'a> {
+    let size = size.unwrap_or(Size::default());
+    parent.spawn_bundle(TextBundle {
+        style: Style {
+            size,
+            ..Default::default()
+        },
+        text: Text::with_section(
+            text,
+            TextStyle {
+                font: font.clone(),
+                font_size: 30.0,
+                color: Color::rgb(0.9, 0.9, 0.9),
+            },
+            Default::default(),
+        ),
+        ..Default::default()
+    })
 }
 
 pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -92,38 +106,28 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                         style: Style {
                             flex_direction: FlexDirection::Row,
                             align_items: AlignItems::Center,
-                            justify_content: JustifyContent::FlexStart,
+                            justify_content: JustifyContent::Center,
                             ..Default::default()
                         },
                         color: Color::NONE.into(),
                         ..Default::default()
                     })
                     .with_children(|parent| {
-                        parent.spawn_bundle(TextBundle {
-                            style: Style {
-                                size: Size::new(Val::Px(200.0), Val::Px(65.0)),
-                                ..Default::default()
-                            },
-                            text: Text::with_section(
-                                action.get_name(),
-                                TextStyle {
-                                    font: font.clone(),
-                                    font_size: 30.0,
-                                    color: Color::rgb(0.9, 0.9, 0.9),
-                                },
-                                Default::default(),
-                            ),
-                            ..Default::default()
-                        });
+                        spawn_text(
+                            parent,
+                            action.get_name(),
+                            &font,
+                            Some(Size::new(Val::Px(200.0), Val::Px(65.0))),
+                        );
                         for num in 0..NUM_HOTKEYS_TO_SHOW {
                             // Spawn with empty text, this is going to get set in change_button_text_system immediately anyways
-                            spawn_button(parent, "".into(), font.clone()).insert(HotkeyButton {
+                            spawn_button(parent, "".into(), &font).insert(HotkeyButton {
                                 action: action.clone(),
                                 num,
                             });
                         }
                     });
             }
-            spawn_button(parent, "Apply".into(), font.clone()).insert(ApplySettingsButton);
+            spawn_button(parent, "Apply".into(), &font).insert(ApplySettingsButton);
         });
 }
