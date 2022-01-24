@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use hotkey_plugin::action::Action;
 use hotkey_plugin::hotkey_listener::HotkeyListener;
 use hotkey_plugin::hotkey_plugin::HotkeyPlugin;
 use hotkey_plugin::hotkey_states::HotkeyStates;
@@ -13,20 +14,20 @@ use ui::HotkeyButton;
 mod ui;
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
-pub enum Action {
+pub enum GameAction {
     WalkLeft,
     WalkRight,
     Jump,
     Duck,
 }
 
-impl Action {
+impl GameAction {
     fn get_name(&self) -> &str {
         match self {
-            Action::WalkLeft => "Walk left",
-            Action::WalkRight => "Walk right",
-            Action::Jump => "Jump",
-            Action::Duck => "Duck",
+            GameAction::WalkLeft => "Walk left",
+            GameAction::WalkRight => "Walk right",
+            GameAction::Jump => "Jump",
+            GameAction::Duck => "Duck",
         }
     }
 }
@@ -35,7 +36,8 @@ fn main() {
     let config = serde_json::from_str(include_str!("../../assets/settings.json")).unwrap();
     App::new()
         .add_plugin(
-            HotkeyPlugin::<Action>::new(config).allow_modification(KeyCode::Escape, KeyCode::Back),
+            HotkeyPlugin::<GameAction>::new(config)
+                .allow_modification(Action::Key(KeyCode::Escape), Action::Key(KeyCode::Back)),
         )
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup_ui)
@@ -51,7 +53,7 @@ fn select_hotkeys_system(
         (&Interaction, &HotkeyButton),
         (Changed<Interaction>, With<Button>, With<Children>),
     >,
-    mut hotkey_listener: ResMut<HotkeyListener<Action>>,
+    mut hotkey_listener: ResMut<HotkeyListener<GameAction>>,
 ) {
     for (interaction, hotkey_name) in interaction_query.iter_mut() {
         if let Interaction::Clicked = interaction {
@@ -69,27 +71,27 @@ fn apply_hotkeys_system(
             With<ApplySettingsButton>,
         ),
     >,
-    mut hotkey_listener: ResMut<HotkeyListener<Action>>,
+    mut hotkey_listener: ResMut<HotkeyListener<GameAction>>,
 ) {
     if let Some(Interaction::Clicked) = interaction_query.iter().next() {
         hotkey_listener.apply_settings()
     }
 }
 
-fn input_system(hotkeys: Res<HotkeyStates<Action>>) {
-    if hotkeys.repeated(Action::WalkLeft) {
+fn input_system(hotkeys: Res<HotkeyStates<GameAction>>) {
+    if hotkeys.repeated(GameAction::WalkLeft) {
         println!("Walking to the left");
     }
-    if hotkeys.repeated(Action::WalkRight) {
+    if hotkeys.repeated(GameAction::WalkRight) {
         println!("Walking to the right");
     }
-    if hotkeys.just_pressed(Action::Jump) {
+    if hotkeys.just_pressed(GameAction::Jump) {
         println!("Jumping");
     }
-    if hotkeys.pressed(Action::Duck) {
+    if hotkeys.pressed(GameAction::Duck) {
         println!("Ducked");
     }
-    if hotkeys.just_released(Action::Duck) {
+    if hotkeys.just_released(GameAction::Duck) {
         println!("Stopped ducking");
     }
 }

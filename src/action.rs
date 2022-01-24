@@ -5,7 +5,7 @@ use serde::Serialize;
 
 use super::mouse_wheel_action::MouseWheelAction;
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub enum Action {
     Button(MouseButton),
     Scroll(MouseWheelAction),

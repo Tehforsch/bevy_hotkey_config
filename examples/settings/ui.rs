@@ -2,13 +2,13 @@ use bevy::ecs::system::EntityCommands;
 use bevy::prelude::*;
 use hotkey_plugin::hotkey_config::HotkeyConfig;
 
-use crate::Action;
+use crate::GameAction;
 
 pub const NUM_HOTKEYS_TO_SHOW: usize = 3;
 
 #[derive(Component)]
 pub struct HotkeyButton {
-    pub action: Action,
+    pub action: GameAction,
     pub num: usize,
 }
 
@@ -18,7 +18,7 @@ pub struct ApplySettingsButton;
 pub fn change_button_text_system(
     button_query: Query<(&HotkeyButton, &Children), With<Button>>,
     mut text_query: Query<&mut Text>,
-    config: Res<HotkeyConfig<Action>>,
+    config: Res<HotkeyConfig<GameAction>>,
 ) {
     if config.is_changed() {
         for (button, children) in button_query.iter() {
@@ -95,10 +95,10 @@ pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
         })
         .with_children(|parent| {
             for action in [
-                Action::WalkLeft,
-                Action::WalkRight,
-                Action::Jump,
-                Action::Duck,
+                GameAction::WalkLeft,
+                GameAction::WalkRight,
+                GameAction::Jump,
+                GameAction::Duck,
             ] {
                 parent
                     .spawn_bundle(NodeBundle {

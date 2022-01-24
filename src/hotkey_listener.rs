@@ -16,17 +16,17 @@ use crate::modifier::AVAILABLE_MODIFIERS;
 #[derive(Component)]
 pub struct HotkeyListener<T> {
     currently_listening: Option<(T, usize)>,
-    cancel_hotkey: KeyCode,
-    remove_hotkey: KeyCode,
+    cancel_action: Action,
+    remove_action: Action,
     should_apply_settings: bool,
 }
 
 impl<T> HotkeyListener<T> {
-    pub fn new(cancel_hotkey: KeyCode, remove_hotkey: KeyCode) -> Self {
+    pub fn new(cancel_action: Action, remove_action: Action) -> Self {
         Self {
             currently_listening: None,
-            cancel_hotkey,
-            remove_hotkey,
+            cancel_action,
+            remove_action,
             should_apply_settings: false,
         }
     }
@@ -89,22 +89,18 @@ where
         // we will not listen anymore.
         let (hotkey, num) = self.currently_listening.take().unwrap();
         let current_hotkeys = config.map.get_mut(&hotkey);
-        if let Action::Key(key) = action {
-            if key == self.remove_hotkey {
-                if let Some(current_hotkeys) = current_hotkeys {
-                    current_hotkeys.try_remove_hotkey(num);
-                }
-                return;
-            }
-            if key == self.cancel_hotkey {
-                return;
-            }
+        if action == self.cancel_action {
+            return;
         }
-        let new_hotkey = Hotkey {
-            key: action,
-            modifiers,
-        };
         if let Some(current_hotkeys) = current_hotkeys {
+            if action == self.remove_action {
+                current_hotkeys.try_remove_hotkey(num);
+                return;
+            }
+            let new_hotkey = Hotkey {
+                key: action,
+                modifiers,
+            };
             current_hotkeys.change_hotkey(num, new_hotkey);
         }
     }

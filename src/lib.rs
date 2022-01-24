@@ -1,4 +1,4 @@
-mod action;
+pub mod action;
 mod config;
 mod hotkey;
 pub mod hotkey_config;

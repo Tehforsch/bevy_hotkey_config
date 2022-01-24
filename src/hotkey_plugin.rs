@@ -1,6 +1,5 @@
 use std::hash::Hash;
 
-use bevy::prelude::KeyCode;
 use bevy::prelude::ParallelSystemDescriptorCoercion;
 use bevy::prelude::Plugin;
 use bevy::prelude::ResMut;
@@ -10,6 +9,7 @@ use super::hotkey_states::reset_input_system;
 use super::hotkey_states::set_hotkey_states_from_input_system;
 use super::hotkey_states::HotkeyStates;
 use super::window_focus_state::WindowFocusState;
+use crate::action::Action;
 use crate::hotkey_config::HotkeyConfig;
 use crate::hotkey_config::KeyRepeatSettings;
 use crate::hotkey_listener::HotkeyListener;
@@ -23,7 +23,7 @@ enum HotkeySystems {
 pub struct HotkeyPlugin<T: Eq + Hash + Clone> {
     config: HotkeyConfig<T>,
     key_repeat: KeyRepeatSettings,
-    listener_settings: Option<(KeyCode, KeyCode)>,
+    listener_settings: Option<(Action, Action)>,
 }
 
 impl<T: Eq + Hash + Clone> HotkeyPlugin<T> {
@@ -35,8 +35,8 @@ impl<T: Eq + Hash + Clone> HotkeyPlugin<T> {
         }
     }
 
-    pub fn allow_modification(mut self, cancel_key: KeyCode, remove_key: KeyCode) -> Self {
-        self.listener_settings = Some((cancel_key, remove_key));
+    pub fn allow_modification(mut self, cancel_action: Action, remove_action: Action) -> Self {
+        self.listener_settings = Some((cancel_action, remove_action));
         self
     }
 }
@@ -54,11 +54,14 @@ impl<T: Sync + Send + 'static + Eq + Hash + Clone> Plugin for HotkeyPlugin<T> {
                 .label(HotkeySystems::InputReset)
                 .after(HotkeySystems::SetHotkeyStates),
         );
-        if let Some((cancel_key, remove_key)) = self.listener_settings {
-            app.insert_resource(HotkeyListener::<T>::new(cancel_key, remove_key))
-                .insert_resource(self.config.clone())
-                .add_system(HotkeyListener::<T>::apply_hotkey_system)
-                .add_system(HotkeyListener::<T>::listen_system);
+        if let Some((cancel_action, remove_action)) = &self.listener_settings {
+            app.insert_resource(HotkeyListener::<T>::new(
+                cancel_action.clone(),
+                remove_action.clone(),
+            ))
+            .insert_resource(self.config.clone())
+            .add_system(HotkeyListener::<T>::apply_hotkey_system)
+            .add_system(HotkeyListener::<T>::listen_system);
         }
     }
 }

@@ -8,7 +8,7 @@ use hotkey_plugin::hotkey_states::HotkeyStates;
 use hotkey_plugin::modifier::Modifier;
 
 #[derive(Clone, PartialEq, Eq, Hash)]
-enum Action {
+enum GameAction {
     WalkLeft,
     WalkRight,
     Jump,
@@ -17,39 +17,39 @@ enum Action {
 
 fn main() {
     let mut app = App::new();
-    let mut config = HotkeyConfig::<Action>::empty();
-    config.insert_normal(Action::WalkLeft, KeyCode::A);
-    config.insert_normal(Action::WalkLeft, KeyCode::Left);
-    config.insert_with_modifiers(Action::WalkLeft, KeyCode::A, &[Modifier::Control]);
-    config.insert_normal(Action::WalkRight, KeyCode::D);
-    config.insert_normal(Action::WalkRight, KeyCode::Right);
-    config.insert_with_modifiers(Action::WalkRight, KeyCode::D, &[Modifier::Control]);
-    config.insert_normal(Action::Jump, KeyCode::W);
-    config.insert_normal(Action::Jump, KeyCode::Up);
-    config.insert_normal(Action::Duck, KeyCode::S);
-    config.insert_normal(Action::Duck, KeyCode::Down);
+    let mut config = HotkeyConfig::<GameAction>::empty();
+    config.insert_normal(GameAction::WalkLeft, KeyCode::A);
+    config.insert_normal(GameAction::WalkLeft, KeyCode::Left);
+    config.insert_with_modifiers(GameAction::WalkLeft, KeyCode::A, &[Modifier::Control]);
+    config.insert_normal(GameAction::WalkRight, KeyCode::D);
+    config.insert_normal(GameAction::WalkRight, KeyCode::Right);
+    config.insert_with_modifiers(GameAction::WalkRight, KeyCode::D, &[Modifier::Control]);
+    config.insert_normal(GameAction::Jump, KeyCode::W);
+    config.insert_normal(GameAction::Jump, KeyCode::Up);
+    config.insert_normal(GameAction::Duck, KeyCode::S);
+    config.insert_normal(GameAction::Duck, KeyCode::Down);
 
     app.add_plugins(DefaultPlugins)
-        .add_plugin(HotkeyPlugin::<Action>::new(config))
+        .add_plugin(HotkeyPlugin::<GameAction>::new(config))
         .add_system(input_system);
 
     app.run();
 }
 
-fn input_system(hotkeys: Res<HotkeyStates<Action>>) {
-    if hotkeys.repeated(Action::WalkLeft) {
+fn input_system(hotkeys: Res<HotkeyStates<GameAction>>) {
+    if hotkeys.repeated(GameAction::WalkLeft) {
         println!("Walking to the left");
     }
-    if hotkeys.repeated(Action::WalkRight) {
+    if hotkeys.repeated(GameAction::WalkRight) {
         println!("Walking to the right");
     }
-    if hotkeys.just_pressed(Action::Jump) {
+    if hotkeys.just_pressed(GameAction::Jump) {
         println!("Jumping");
     }
-    if hotkeys.pressed(Action::Duck) {
+    if hotkeys.pressed(GameAction::Duck) {
         println!("Ducked");
     }
-    if hotkeys.just_released(Action::Duck) {
+    if hotkeys.just_released(GameAction::Duck) {
         println!("Stopped ducking");
     }
 }
