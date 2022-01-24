@@ -34,7 +34,7 @@ struct HotkeyButton(Action);
 struct ApplySettingsButton;
 
 fn main() {
-    let config = serde_json::from_str(include_str!("../assets/settings.json")).unwrap();
+    let config = serde_json::from_str(include_str!("../../assets/settings.json")).unwrap();
     App::new()
         .add_plugin(
             HotkeyPlugin::<Action>::new(config).allow_modification(KeyCode::Escape, KeyCode::Back),
@@ -135,7 +135,7 @@ fn setup_ui(
         commands
             .spawn_bundle(NodeBundle {
                 style: Style {
-                    flex_direction: FlexDirection::ColumnReverse,
+                    flex_direction: FlexDirection::Column,
                     size: Size::new(Val::Percent(100.0), Val::Percent(10.0)),
                     margin: Rect::all(Val::Auto),
                     align_items: AlignItems::Center,
