@@ -1,7 +1,6 @@
 use bevy::ecs::system::EntityCommands;
 use bevy::prelude::*;
 use hotkey_plugin::hotkey_config::HotkeyConfig;
-use hotkey_plugin::Hotkeys;
 
 use crate::Action;
 

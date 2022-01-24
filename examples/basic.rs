@@ -19,12 +19,15 @@ fn main() {
     let mut app = App::new();
     let mut config = HotkeyConfig::<Action>::empty();
     config.insert_normal(Action::WalkLeft, KeyCode::A);
-    config.insert_normal(Action::WalkRight, KeyCode::D);
     config.insert_normal(Action::WalkLeft, KeyCode::Left);
+    config.insert_with_modifiers(Action::WalkLeft, KeyCode::A, &[Modifier::Control]);
+    config.insert_normal(Action::WalkRight, KeyCode::D);
     config.insert_normal(Action::WalkRight, KeyCode::Right);
+    config.insert_with_modifiers(Action::WalkRight, KeyCode::D, &[Modifier::Control]);
     config.insert_normal(Action::Jump, KeyCode::W);
-    config.insert_with_modifiers(Action::Jump, KeyCode::W, &[Modifier::Control]);
+    config.insert_normal(Action::Jump, KeyCode::Up);
     config.insert_normal(Action::Duck, KeyCode::S);
+    config.insert_normal(Action::Duck, KeyCode::Down);
 
     app.add_plugins(DefaultPlugins)
         .add_plugin(HotkeyPlugin::<Action>::new(config))
