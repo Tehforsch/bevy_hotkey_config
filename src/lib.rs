@@ -69,4 +69,8 @@ impl Hotkeys {
     pub fn iter(&self) -> std::slice::Iter<Hotkey> {
         self.0.iter()
     }
+
+    pub fn get(&self, num: usize) -> Option<&Hotkey> {
+        self.0.get(num)
+    }
 }
