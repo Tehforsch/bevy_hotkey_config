@@ -18,7 +18,8 @@ enum GameAction {
 fn main() {
     let mut app = App::new();
 
-    let config = serde_json::from_str(include_str!("../assets/settings.json")).unwrap();
+    let config =
+        serde_json::from_reader(std::fs::File::open("assets/hotkeys.json").unwrap()).unwrap();
 
     app.add_plugins(DefaultPlugins)
         .add_plugin(HotkeyPlugin::<GameAction>::new(config))
