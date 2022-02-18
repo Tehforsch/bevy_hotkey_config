@@ -1,5 +1,5 @@
 [package]
-name = "hotkey_plugin"
+name = "bevy_hotkey_config"
 version = "0.1.0"
 edition = "2021"
 
